@@ -1,0 +1,3 @@
+jar -cvf BookBeanServletHash.war *
+copy BookBeanServletHash.war "C:\Program Files\tomcat\webapps\."
+pause

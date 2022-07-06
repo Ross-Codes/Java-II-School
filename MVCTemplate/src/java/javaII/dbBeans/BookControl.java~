@@ -1,0 +1,105 @@
+
+/*
+ * BookControl.java
+ *
+ * A Controller for the Book Lookup Web application
+ * Instantiates a BookBean to hold book information.
+ * Calls the appropriate JSP for display of selected books.
+ */
+
+package javaII.dbBeans;
+
+
+import java.io.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+/**
+ *
+ * @author ddalsveen
+ * @version
+ */
+public class BookControl extends HttpServlet {
+	private String target = null; // the jsp target (the view)
+	private BookBean bookBean = null ; // the reference variable for the bean(model)
+
+	
+	// This method is called once upon servlet creation.
+	public void init(){
+		target = "/BookLook.jsp";
+                bookBean = new BookBean(); // create the model
+		
+//		BufferedReader br; // create a buffered reader
+//		ServletContext app = getServletContext();
+//		String path = app.getRealPath("/WEB-INF/classes/"+infile);
+//		System.out.println(path);
+		
+
+	}
+	
+	
+	
+	/** Processes requests for both HTTP GET and POST requests.
+	 * @param request servlet request
+	 * @param response servlet response
+	 */
+	protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+	throws ServletException, IOException {
+		target =  "/BookLook.jsp";
+                String msg = "";
+
+		// get the value of the name parameter
+		String name = request.getParameter("titleName");
+		System.out.println("name = " +name);
+		if(!bookBean.isPopulated()){
+		    msg = "Book Information Not Available" ;
+		    log(msg);
+		}
+		// If name exists, check for book name or list.
+		else if(name == null || name.trim()== "" 
+				 || name.equalsIgnoreCase("-List-") ){
+
+		   target = "/BookLook.jsp";
+		    request.setAttribute("names",bookBean.getTitleList());
+			
+		}
+		// If name exists, check for book name or list.
+		else{
+	         
+	        	  // set the requested title in the bean.
+			bookBean.setTitle(name);
+			Book b = (Book)bookBean.getBook();
+			request.setAttribute("book", (Book) b);
+			target = "/BookInfo.jsp";
+		  
+		}
+
+	    RequestDispatcher dispatcher = 
+	    	request.getRequestDispatcher(target);
+	    dispatcher.forward(request,response);
+		
+		
+	}
+
+	/** Handles the HTTP GET request.
+	 * @param request servlet request
+	 * @param response servlet response
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	throws ServletException, IOException {
+		processRequest(request, response);
+	}
+	
+	/** Handles the HTTP POST request.
+	 * @param request servlet request
+	 * @param response servlet response
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	throws ServletException, IOException {
+		processRequest(request, response);
+	}
+	
+	
+}
+
+
